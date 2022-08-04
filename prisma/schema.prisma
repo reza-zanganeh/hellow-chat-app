@@ -1,0 +1,114 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                Int                 @id @default(autoincrement())
+  username          String              @unique
+  fullname          String
+  email             String              @unique
+  password          String
+  profilePictureSrc String
+  bio               String?
+  messages          Message[]
+  chanels           UserOnChanel[]
+  groups            UserOnGroup[]
+  privateChats      UserOnPrivateChat[]
+  createdAt         DateTime            @default(now())
+}
+
+model Message {
+  id            Int         @id @default(autoincrement())
+  type          MessageType
+  contextOrSrc  String
+  owner         User        @relation(fields: [ownerId], references: [id])
+  ownerId       Int
+  privateChat   PrivateChat @relation(fields: [privateChatId], references: [id])
+  privateChatId Int
+  Chanel        Chanel      @relation(fields: [ChanelId], references: [id])
+  ChanelId      Int
+  Group         Group       @relation(fields: [GroupId], references: [id])
+  GroupId       Int
+  is_read       Boolean
+  createdAt     DateTime    @default(now())
+}
+
+model Chanel {
+  id          Int            @id @default(autoincrement())
+  name        String
+  description String
+  memberCount Int            @default(0)
+  messages    Message[]
+  users       UserOnChanel[]
+  createdAt   DateTime       @default(now())
+}
+
+model UserOnChanel {
+  chanel   Chanel   @relation(fields: [chanelId], references: [id])
+  chanelId Int
+  user     User     @relation(fields: [userId], references: [id])
+  userId   Int
+  joinedAt DateTime @default(now())
+  role     Role
+
+  @@id([chanelId, userId])
+}
+
+model Group {
+  id          Int           @id @default(autoincrement())
+  name        String
+  description String
+  memberCount Int           @default(0)
+  messages    Message[]
+  users       UserOnGroup[]
+  createdAt   DateTime      @default(now())
+}
+
+model UserOnGroup {
+  group    Group    @relation(fields: [groupId], references: [id])
+  groupId  Int
+  user     User     @relation(fields: [userId], references: [id])
+  userId   Int
+  joinedAt DateTime @default(now())
+  role     Role
+
+  @@id([groupId, userId])
+}
+
+model PrivateChat {
+  id       Int                 @id @default(autoincrement())
+  messages Message[]
+  users    UserOnPrivateChat[]
+}
+
+model UserOnPrivateChat {
+  privateChat   PrivateChat @relation(fields: [privateChatId], references: [id])
+  privateChatId Int
+  user          User        @relation(fields: [userId], references: [id])
+  userId        Int
+  isStarter     Boolean
+
+  @@id([privateChatId, userId])
+}
+
+// enum
+enum MessageType {
+  TEXT
+  IMAGE
+  VIDEO
+  GIF
+  VOICE
+}
+
+enum Role {
+  NORMAL
+  ADMIN
+}
