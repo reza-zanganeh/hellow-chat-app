@@ -3,9 +3,19 @@
     "prisma": "^4.1.1"
   },
   "dependencies": {
+    "@prisma/client": "^4.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
     "socket.io": "^4.5.1"
-  }
+  },
+  "name": "realtime-chat-application-server",
+  "version": "0.0.1",
+  "description": "a practical project to practice with socket.io and more",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "reza.zanganeh",
+  "license": "ISC"
 }
