@@ -16,13 +16,15 @@ model User {
   fullname          String
   email             String              @unique
   password          String
-  profilePictureSrc String
+  profilePictureSrc String              @default("default-profile-picture.png")
   bio               String?
   messages          Message[]
   chanels           UserOnChanel[]
   groups            UserOnGroup[]
   privateChats      UserOnPrivateChat[]
   createdAt         DateTime            @default(now())
+  lasntTimeOnline   DateTime            @default(now())
+  isOnline          Boolean             @default(false)
 }
 
 model Message {
