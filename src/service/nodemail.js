@@ -68,3 +68,39 @@ module.exports.sendOtpCode = async (email, randomCode) => {
     throw error
   }
 }
+
+module.exports.sendResetPasswordHash = async (
+  email,
+  userId,
+  hash,
+  redirectUrl
+) => {
+  try {
+    const message = `
+  <div style="font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2">
+  <div style="margin:50px auto;width:70%;padding:20px 0">
+    <div style="border-bottom:1px solid #eee">
+      <a href="TODO" style="font-size:1.4em;color: #00466a;text-decoration:none;font-weight:600">Hellow Chat</a>
+    </div>
+    <p style="font-size:1.1em">Hi,</p>
+    ${
+      redirectUrl
+        ? `<p>click on the following link to complete your reset password procedures. reset password link is valid for 5 minutes</p>
+    <a href="${redirectUrl.trim()}/${userId}/${hash}" target="_blank" style="text-decoration: "none";font-size: "16px";background: #00466a;margin: 0 auto;width: max-content;padding: 0 10px;color: #fff;border-radius: 4px;">reset password link</a>`
+        : ` <p>use the following token to complete your reset password procedures. reset password token is valid for 5 minutes (if you don't know next step read api document)</p>
+        <h5 style="background: #00466a;margin: 0 auto;width: max-content;padding: 0 10px;color: #fff;border-radius: 4px;">${hash}</h5>`
+    }
+    <p style="font-size:0.9em;">Regards,<br />Hellow Chat</p>
+    <hr style="border:none;border-top:1px solid #eee" />
+    <div style="float:right;padding:8px 0;color:#aaa;font-size:0.8em;line-height:1;font-weight:300">
+      <p>Hellow Chat Inc</p>
+      <p>Iran</p>
+    </div>
+  </div>
+</div>
+`
+    await sendMail(email, "reset Hellow Chat password", message)
+  } catch (error) {
+    throw error
+  }
+}

@@ -10,9 +10,12 @@ module.exports.createError = ({ statusCode, message }) => {
   return error
 }
 
-module.exports.createJsonWebToken = (data) => {
+module.exports.createJsonWebToken = (
+  data,
+  expiresIn = projectConfig.otpConfig.expiresTime
+) => {
   const token = jwt.sign(data, projectConfig.serverConfig.tokenKey, {
-    expiresIn: `${projectConfig.otpConfig.expiresTime}m`,
+    expiresIn: `${expiresIn}m`,
   })
   return token
 }

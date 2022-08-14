@@ -17,3 +17,7 @@ module.exports.setOnRedis = async (key, value, expiresIn = 1) => {
 module.exports.getFromRedis = async (key) => {
   return await client.get(key)
 }
+
+module.exports.getTtlFromRedis = async (key) => {
+  return await client.ttl(key)
+}

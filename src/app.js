@@ -3,10 +3,7 @@ const express = require("express")
 const cors = require("cors")
 const { createServer } = require("http")
 const createSocketServer = require("./socket.io/app")
-const { errorHandler, notFoundResponse } = require("./helper/responseHandler")
-// require routers
-const userRouter = require("./app/user/router")
-
+const registerRoutes = require("./router")
 const app = express()
 app.use(
   cors({
@@ -23,9 +20,7 @@ app.get("/", (req, res, next) => {
   res.status(200).json({ message: "server is running , you can use it" })
 })
 // register routers
-app.use("/api/v1/user", userRouter)
-app.use("*", notFoundResponse)
-app.use(errorHandler)
+registerRoutes(app)
 const httpServer = createServer(app)
 createSocketServer(httpServer)
 const PORT = projectConfig.serverConfig.httpServer.port || 3000
