@@ -1,25 +1,10 @@
 const { PrismaClient } = require("@prisma/client")
 const { userOnPrivateChat, privateChat, user, message } = new PrismaClient()
 
-const createPrivateChat = async (starterUserId, reciverUserId) => {
+const getPrivateChatById = async (privateChatId) => {
   try {
-    const createdPrivateChat = await privateChat.create({ data: {} })
-    const result = await userOnPrivateChat.createMany({
-      data: [
-        {
-          isStarter: true,
-          privateChatId: +createdPrivateChat.id,
-          userId: +starterUserId,
-        },
-        {
-          isStarter: false,
-          privateChatId: +createdPrivateChat.id,
-          userId: +reciverUserId,
-        },
-      ],
-    })
-    const createdPrivateChatWithUsers = await privateChat.findFirst({
-      where: { id: createdPrivateChat.id },
+    const result = await privateChat.findFirst({
+      where: { id: +privateChatId },
       select: {
         id: true,
         messages: {
@@ -31,8 +16,8 @@ const createPrivateChat = async (starterUserId, reciverUserId) => {
             is_read: true,
             owner: {
               select: {
-                id,
-                profilePictureSrc,
+                id: true,
+                profilePictureSrc: true,
               },
             },
           },
@@ -55,6 +40,127 @@ const createPrivateChat = async (starterUserId, reciverUserId) => {
         },
       },
     })
+    return result
+  } catch (error) {
+    throw error
+  }
+}
+
+const getMyPrivateChat = async (userId) => {
+  try {
+    const result = await privateChat.findMany({
+      where: {
+        users: { some: { userId: +userId } },
+      },
+      select: {
+        id: true,
+        messages: {
+          select: {
+            id: true,
+            contextOrSrc: true,
+            type: true,
+            createdAt: true,
+            is_read: true,
+            owner: {
+              select: {
+                id: true,
+                profilePictureSrc: true,
+              },
+            },
+          },
+        },
+        users: {
+          select: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+                fullname: true,
+                email: true,
+                bio: true,
+                profilePictureSrc: true,
+                isOnline: true,
+                lasntTimeOnline: true,
+              },
+            },
+          },
+        },
+      },
+    })
+    return result
+  } catch (error) {
+    throw error
+  }
+}
+
+const getPrivateChatByIdAndUserId = async (privateChatId, userId) => {
+  try {
+    const result = await privateChat.findFirst({
+      where: {
+        id: +privateChatId,
+        users: { some: { userId: +userId } },
+      },
+      select: {
+        id: true,
+        messages: {
+          select: {
+            id: true,
+            contextOrSrc: true,
+            type: true,
+            createdAt: true,
+            is_read: true,
+            owner: {
+              select: {
+                id: true,
+                profilePictureSrc: true,
+              },
+            },
+          },
+        },
+        users: {
+          select: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+                fullname: true,
+                email: true,
+                bio: true,
+                profilePictureSrc: true,
+                isOnline: true,
+                lasntTimeOnline: true,
+              },
+            },
+          },
+        },
+      },
+    })
+    return result
+  } catch (error) {
+    throw error
+  }
+}
+
+const createPrivateChat = async (starterUserId, reciverUserId) => {
+  try {
+    const createdPrivateChat = await privateChat.create({ data: {} })
+    await userOnPrivateChat.createMany({
+      data: [
+        {
+          isStarter: true,
+          privateChatId: +createdPrivateChat.id,
+          userId: +starterUserId,
+        },
+        {
+          isStarter: false,
+          privateChatId: +createdPrivateChat.id,
+          userId: +reciverUserId,
+        },
+      ],
+    })
+    const createdPrivateChatWithUsers = getPrivateChatById(
+      createdPrivateChat.id
+    )
     return createdPrivateChatWithUsers
   } catch (error) {
     throw error
@@ -160,4 +266,7 @@ module.exports = {
   findPrivateChatByUsersId,
   findUserById,
   createMessageInPrivateChat,
+  getPrivateChatById,
+  getMyPrivateChat,
+  getPrivateChatByIdAndUserId,
 }

@@ -7,6 +7,21 @@ const privateChatRouter = express.Router()
 const { isAuthenticate } = require("../../middleware/authentication")
 const privateChatCotroller = require("./controller")
 const validationSchema = require("./validationSchema")
+
+privateChatRouter.get(
+  "/",
+  isAuthenticate,
+  privateChatCotroller.getMyPrivateChat
+)
+
+privateChatRouter.get(
+  "/:privateChatId",
+  isAuthenticate,
+  checkSchema(validationSchema.getPrivateChat),
+  expressValidationResultHandler,
+  privateChatCotroller.getPrivateChatById
+)
+
 privateChatRouter.post(
   "/",
   isAuthenticate,

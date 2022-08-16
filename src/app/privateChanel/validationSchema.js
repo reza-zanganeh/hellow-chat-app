@@ -8,3 +8,7 @@ module.exports.sendMessageToPrivateChat = {
   context: required("context", "body"),
   privateChatId: required("privateChatId", "body"),
 }
+
+module.exports.getPrivateChat = {
+  privateChatId: required("privateChatId", "params"),
+}

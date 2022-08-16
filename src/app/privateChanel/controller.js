@@ -64,3 +64,40 @@ module.exports.sendTextMessageToPrivateChat = async (req, res, next) => {
     )
   }
 }
+
+module.exports.getMyPrivateChat = async (req, res, next) => {
+  try {
+    const { id } = req.user
+    console.log(id)
+    const privateChat = await dataLogic.getMyPrivateChat(id)
+    resposeHandler(
+      res,
+      privateChat,
+      responseMessage.success.successFullOperation("get my private chat")
+    )
+  } catch (error) {
+    console.log(error)
+    next(
+      createError(responseMessage.error.faildOperation("get my private chat"))
+    )
+  }
+}
+
+module.exports.getPrivateChatById = async (req, res, next) => {
+  try {
+    const { privateChatId } = req.params
+    const { id } = req.user
+    const privateChat = await dataLogic.getPrivateChatByIdAndUserId(
+      privateChatId,
+      id
+    )
+    resposeHandler(
+      res,
+      privateChat,
+      responseMessage.success.successFullOperation("get private chat")
+    )
+  } catch (error) {
+    console.log(error)
+    next(createError(responseMessage.error.faildOperation("get private chat")))
+  }
+}
