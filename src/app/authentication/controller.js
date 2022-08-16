@@ -7,7 +7,7 @@ const {
 const bcrypt = require("bcrypt")
 const crypto = require("crypto")
 const { sendOtpCode, sendResetPasswordHash } = require("../../service/nodemail")
-const responseMessage = require("./responseMessage")
+const responseMessage = require("../../helper/responseMessage")
 const dataLogic = require("./dataLogic")
 const arvanCloud = require("../../service/arvanCloud")
 const { resposeHandler } = require("../../helper/responseHandler")
@@ -55,10 +55,13 @@ module.exports.requestOtpToEmail = async (req, res, next) => {
 
     sendOtpCode(email, randomCode)
 
-    const token = createJsonWebToken({
-      email,
-      randomCode,
-    })
+    const token = createJsonWebToken(
+      {
+        email,
+        randomCode,
+      },
+      projectConfig.otpConfig.expiresTime
+    )
 
     resposeHandler(
       res,
@@ -129,11 +132,14 @@ module.exports.register = async (req, res, next) => {
       bio,
     })
 
-    const token = createJsonWebToken({
-      id: newUser.id,
-      username,
-      email,
-    })
+    const token = createJsonWebToken(
+      {
+        id: newUser.id,
+        username,
+        email,
+      },
+      projectConfig.serverConfig.authenticationTokenExpiresTime
+    )
 
     let presignedUrl = ""
     if (profilePictureType) {
@@ -176,11 +182,14 @@ module.exports.login = async (req, res, next) => {
       return next(createError(responseMessage.error.loginFaild))
     }
     // if true create and send token
-    const token = createJsonWebToken({
-      id: user.id,
-      username,
-      email: user.email,
-    })
+    const token = createJsonWebToken(
+      {
+        id: user.id,
+        username,
+        email: user.email,
+      },
+      projectConfig.serverConfig.authenticationTokenExpiresTime
+    )
     // 7. send token in response
     resposeHandler(
       res,

@@ -33,13 +33,13 @@ model Message {
   contextOrSrc  String
   owner         User        @relation(fields: [ownerId], references: [id])
   ownerId       Int
-  privateChat   PrivateChat @relation(fields: [privateChatId], references: [id])
-  privateChatId Int
-  Chanel        Chanel      @relation(fields: [ChanelId], references: [id])
-  ChanelId      Int
-  Group         Group       @relation(fields: [GroupId], references: [id])
-  GroupId       Int
-  is_read       Boolean
+  privateChat   PrivateChat? @relation(fields: [privateChatId], references: [id])
+  privateChatId Int?
+  Chanel        Chanel?      @relation(fields: [ChanelId], references: [id])
+  ChanelId      Int?
+  Group         Group?       @relation(fields: [GroupId], references: [id])
+  GroupId       Int?
+  is_read       Boolean     @default(false)
   createdAt     DateTime    @default(now())
 }
 
